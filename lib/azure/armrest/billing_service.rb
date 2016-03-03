@@ -16,10 +16,16 @@ module Azure
         JSON.parse(response.body)
       end
 
-      def list_usage
+      def list_usage(report_start_date, report_end_date, granularity,
+                     show_details, continuation_token = nil)
         service = 'UsageAggregates'
         url = build_url(service)
-        pp url
+        url << "&reportedStartTime=#{report_start_date}" unless report_start_date.nil?
+        url << "&reportedEndTime=#{report_end_date}" unless report_end_date.nil?
+        url << "&aggregationGranularity=#{granularity}" unless granularity.nil?
+        url << "&showDetails=#{show_details}" unless show_details.nil?
+        url << "&continuationToken=#{continuation_token}" unless continuation_token.nil?
+
         response = rest_get(url)
         JSON.parse(response.body)
       end
@@ -42,7 +48,7 @@ module Azure
         url
       end
 
-      def build_filter(offer_durable_id, currency, locale, region_info)
+      def build_rate_card_filter(offer_durable_id, currency, locale, region_info)
         s = "OfferDurableId eq '#{offer_durable_id}'"
         s << "and Currency eq '#{currency}'"
         s << "and Locale eq '#{locale}'"
